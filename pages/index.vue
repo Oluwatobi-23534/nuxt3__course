@@ -1,6 +1,7 @@
-<script setup lang="ts">
-const loading = ref(false);
+<script setup>
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+const loading = ref(false);
+let data = ref([]);
 
 const list = [
   {
@@ -20,6 +21,69 @@ const list = [
     component: "<div>today</div>",
   },
 ];
+
+
+let currentCategory = ref("today");
+
+
+function generateRandomData(number = 7) {
+  let values = [];
+  for (let i = 0; i < number + 1; i++) {
+    values.push(Math.floor(Math.random() * 100));
+  }
+
+  data.value = values;
+  return values;
+}
+
+const setCategory = (e) => {
+  let v = e.target.innerText.toLowerCase();
+  currentCategory.value = v;
+  switch (v) {
+    case "today":
+      generateRandomData(24);
+    case "week":
+      generateRandomData(7);
+    case "month":
+      generateRandomData(31);
+    case "year":
+      generateRandomData(12);
+  }
+};
+
+const cards = [
+  {
+    title: 'Sales',
+    progression: 12,
+    amount: 1244.74,
+    label: 'View sales',
+    description: 'Sales of May 2024',
+    icon: 'solar:ticket-sale-outline'
+  },
+  {
+    title: 'Refunds',
+    progression: 8,
+    amount: 84.44,
+    label: 'View refunds',
+    description: 'Refunds since the beginning of the year',
+    icon: 'heroicons-outline:receipt-refund'
+  },
+  {
+    title: 'Payouts',
+    progression: 12,
+    amount: 899.99,
+    label: 'View payouts',
+    description: 'Payouts of this week',
+    icon: 'tabler:zoom-money'
+  },
+]
+
+onMounted(() => {
+  generateRandomData(24);
+});
+
+
+
 </script>
 
 <template>
@@ -29,18 +93,12 @@ const list = [
         <p>Hi, welcome back Dan !</p>
         <h1>Dashboard</h1>
       </div>
-      <div class="bg-neutral-200 w-[120px] h-[36px]"></div>
+      <ProductNew/>
     </header>
 
-    <main class="grid gap-4">
-      <!-- <div class="flex items-center gap-4">
-        <div  v-for="(item, index) in 3" :key="index" class="w-[120px] h-[36px] bg-neutral-200"></div>
-      </div>
-      <section>
-        <div class="w-full h-[360px] bg-neutral-200"></div>
-      </section> -->
-      <Tabs default-value="today" class="w-[400px]">
-        <TabsList>
+    <main class="grid gap-4 w-full">
+      <Tabs default-value="Today" class="w-full" @click="setCategory">
+        <TabsList class="max-w-[400px]">
           <TabsTrigger
             v-for="(item, index) in list"
             :key="index"
@@ -49,22 +107,21 @@ const list = [
             {{ item.title }}
           </TabsTrigger>
         </TabsList>
-        <TabsContent
+        <TabsContent class="w-[100%]"
           v-for="(item, index) in list"
           :key="index"
           :value="item.title"
         >
-          {{ item.component }}
+          <Chart v-if="data.length > 0" :currentCategory="currentCategory" :data="data"/>
         </TabsContent>
       </Tabs>
     </main>
     <footer>
-      <div class="flex items-center gap-4">
-        <div
-          v-for="(item, index) in 3"
-          :key="index"
-          class="w-full h-[260px] bg-neutral-200"
-        ></div>
+      <div class="grid lg:grid-cols-3 gap-4">
+        <Card
+          v-for="(item, index) in cards"
+          :key="index" :card="item"
+        ></Card>
       </div>
     </footer>
   </div>

@@ -16,7 +16,9 @@ const open = ref(true);
       class="hidden lg:flex w-[200px] h-screen flex flex-col justify-between border-r"
     >
       <SidebarMenu />
-      <div>UserItem</div>
+      <div>
+        <UserItem/>
+      </div>
     </div>
   </div>
 </template>
